@@ -11,10 +11,7 @@ namespace MauiApp1.Models
         public int Id { get; set; } 
         public int IdAuthor { get; set; }
         public int IdMovies { get; set; }
-        public string Title { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string SecondName { get; set; }
+      
 
     }
 }

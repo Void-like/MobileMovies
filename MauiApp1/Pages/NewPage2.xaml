@@ -8,8 +8,10 @@
             Text="Список фильмов"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
-        <Entry x:Name="AuthorId"/>
-        <Entry x:Name="MovieId"/>
+        <Label Text="авторы"/>
+        <Picker  x:Name="PickerAuthor" SelectedItem="{Binding SelectedAuthor}" ItemDisplayBinding="{Binding Name}"/>
+        <Label Text="Фильмы"/>
+        <Picker x:Name="PickerMovie" SelectedItem="{Binding SelectedMovies}" ItemDisplayBinding="{Binding Name}" />
         <Button  Text="Сохранить"  Clicked="Button_Clicked_Save"/>
         <Button  Text="Home"  Clicked="Button_Clicked"/>
         <Button  Text="Изменить" Clicked="OnChangeClicked"/>

@@ -9,26 +9,28 @@ namespace MauiApp1.Pages;
 public partial class NewPage2 : ContentPage
 {
     DBFile db = new DBFile();
-   ListMovies SelectedMovies = new ListMovies();
-
+   Movies SelectedMovies = new Movies();
+    Author SelectedAuthor = new Author();
     
 
     public NewPage2()
 	{
         InitializeComponent();
-        
+        Tablichka();
     }
-    public async Task SaveAuthor()
+    public async void SaveAuthor()
     {
-       await db.ListMoviesAdd(int.Parse(AuthorId.Text),int.Parse(MovieId.Text));
-       
+        await db.ListMoviesAdd(SelectedAuthor.Id, SelectedMovies.Id);
+
         Tablichka();
     }
     
     public async void Tablichka()
     {
-
+        PickerAuthor.ItemsSource = await db.GetAuthorList();
+        PickerMovie.ItemsSource = await db.GetMovieList();
         tablichka.ItemsSource = await db.GetMovieAuthorList();
+        OnPropertyChanged(nameof(db.GetMovieAuthorList));
         OnPropertyChanged(nameof(db.GetMovieList));
     }
     private async void Button_Clicked(object sender, EventArgs e)
@@ -59,7 +61,7 @@ public partial class NewPage2 : ContentPage
 
         if (SelectedMovies != null)
         {
-            await db.DelAuthorMovies(SelectedMovies.Id);
+           
 
         }
         else

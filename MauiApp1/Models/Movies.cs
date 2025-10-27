@@ -14,5 +14,6 @@ namespace MauiApp1.Models
         public string Description { get; set; }
 
         public DateTime Date { get; set; }
+        
     }
 }
