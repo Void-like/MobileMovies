@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Pages.NewPage2"
+             Title="NewPage2">
+    <VerticalStackLayout>
+        <Label 
+            Text="Список фильмов"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Entry x:Name="AuthorId"/>
+        <Entry x:Name="MovieId"/>
+        <Button  Text="Сохранить"  Clicked="Button_Clicked_Save"/>
+        <Button  Text="Home"  Clicked="Button_Clicked"/>
+        <Button  Text="Изменить" Clicked="OnChangeClicked"/>
+        <Button Text="Удалить" Clicked="OnDeleteClicked"/>
+        <ListView ItemsSource="{Binding ListMovies}" x:Name="tablichka">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <ViewCell.View>
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding Title}"  Margin="10,0,5,5"/>
+                                <Label Text="{Binding FirstName}"  Margin="10,0,5,5" />
+                                <Label Text="{Binding SecondName}"  Margin="10,0,5,5" />
+                                <Label Text="{Binding LastName}"  Margin="10,0,5,5" />
+                            </StackLayout>
+                        </ViewCell.View>
+                    </ViewCell>
+
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </VerticalStackLayout>
+</ContentPage>

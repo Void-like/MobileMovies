@@ -1,0 +1,42 @@
+﻿
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.MainPage">
+
+
+        <VerticalStackLayout>
+
+            <Label Text="Название" />
+            <Entry  x:Name="TitleText"/>
+            <Label Text="Описание"/>
+            <Entry x:Name="DiscriptionText"/>
+            <Label Text="Дата выхода"/>
+            <DatePicker  x:Name="DiscriptionDate"/>
+            <Button  Text="Сохранить" Clicked="Button_Clicked_Movie"/>
+            <Button Text="перейти к авторам" Clicked="Button_Clicked_To_Page2"/>
+            <Button  Text="перейти к списку фильмов"  Clicked="Button_Clicked_To_Page3"/>
+        <Button  Text="Изменить" Clicked="OnChangeClicked"/>
+        <Button Text="Удалить" Clicked="OnDeleteClicked"/>
+        <ListView x:Name="MovieListTablichka" SelectedItem="{Binding SelectedMovie}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.ContextActions>
+                                <MenuItem Text="Изменить" Clicked="OnChangeClicked"/>
+                                <MenuItem Text="Удалить" Clicked="OnDeleteClicked"/>
+                            </ViewCell.ContextActions>
+                            <ViewCell.View>
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="{Binding Id}"  Margin="10,0,5,0"/>
+                                    <Label Text="{Binding Name}"  Margin="10,0,5,0"/>
+                                    <Label Text="{Binding Description}"  Margin="10,0,5,0" />
+                                    <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" Margin="10,0,0,0"/>
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </VerticalStackLayout>
+    
+</ContentPage>
