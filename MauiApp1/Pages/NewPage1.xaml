@@ -4,7 +4,7 @@
              x:Class="MauiApp1.NewPage1"
              Title="NewPage1">
 
-    
+    <ScrollView>
         <VerticalStackLayout>
         <Label Text="Имя" />
         <Entry  x:Name="Name"/>
@@ -14,32 +14,89 @@
         <Entry x:Name="ThirtyName" />
         <Label Text="День рождения"/>
         <DatePicker x:Name="BirthDayText"/>
+        <Label Text="Оценочка"/>
+        <Stepper Maximum="5" Minimum="0" Increment="0.1" Value="{Binding OcenochkaReal}"/>
+        <Label Text="Пол" />
+        <Picker x:Name="gender" ItemsSource="{Binding Genres}" />
+        <Label Text="Духовное состояние"/>
+        <Switch x:Name="LiveOrDie"/>
+
+
+
+
         <Button  Text="Сохранить" Clicked="Button_Clicked_Author"/>
         <Button  Text="Home"  Clicked="Button_Clicked_Home"/>
         <Button  Text="Изменить" Clicked="OnChangeClicked"/>
         <Button Text="Удалить" Clicked="OnDeleteClicked"/>
-        <ListView x:Name="Tablicka" SelectedItem="{Binding SelectedAuthor}">
-            <ListView.ItemTemplate>
+            <CarouselView x:Name="Tablicka" CurrentItem="{Binding SelectedAuthor}"  >
+            <CarouselView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <ViewCell.ContextActions>
-                            <MenuItem Text="Изменить" Clicked="OnChangeClicked"/>
-                            <MenuItem Text="Удалить" Clicked="OnDeleteClicked"/>
-                        </ViewCell.ContextActions>
-                        <ViewCell.View>
-                            <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding Id}"  Margin="10,0,5,0"/>
-                                <Label Text="{Binding Name}"  Margin="10,0,5,0"/>
-                                <Label Text="{Binding SecondName}"  Margin="10,0,5,0" />
-                                <Label Text="{Binding ThrityName}" Margin="10,0,5,0" />
-                                <Label Text="{Binding BirthDay, StringFormat='{0:dd.MM.yyy}'}" Margin="10,0,0,0"/>
-                            </StackLayout>
-                        </ViewCell.View>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </VerticalStackLayout>
-    
+                    <Grid Padding="10">
+                        <Frame BackgroundColor="White"
+                        BorderColor="LightGray"
+                        CornerRadius="10"
+                        HasShadow="True"
+                        Padding="15">
+                            <StackLayout>
+                            <Label Text="ID:" FontAttributes="Bold" TextColor="Black"/>
+                            <Label Text="{Binding Id}" Margin="10,0,0,0" TextColor="Black">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                </Label.GestureRecognizers>
+                            </Label>
 
+                            <Label Text="Название:" FontAttributes="Bold" TextColor="Black"/>
+                            <Label Text="{Binding Name}" Margin="10,0,0,0" TextColor="Black">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label  Text="Фамилия:" FontAttributes="Bold" TextColor="Black"/>
+                            <Label  Text="{Binding SecondName}" Margin="10,0,0,0" TextColor="Black">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label  Text="Отчество:" FontAttributes="Bold" TextColor="Black"/>
+                            <Label   Text="{Binding ThrityName}" Margin="10,0,0,0" TextColor="Black">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label Grid.Column="0" Text="Дата:" FontAttributes="Bold" TextColor="Black"/>
+                            <Label Grid.Column="0" Text="{Binding BirthDay, StringFormat='{0:dd.MM.yyyy}'}" Margin="10,0,0,0" TextColor="Black">
+                                <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                                <Label  Text="Пол:" FontAttributes="Bold" TextColor="Black"/>
+                                <Label   Text="{Binding Gender}" Margin="10,0,0,0" TextColor="Black">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label  Text="Оценка:" FontAttributes="Bold" TextColor="Black"/>
+                                <Label   Text="{Binding Ocenochka}" Margin="10,0,0,0" TextColor="Black">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label  Text="Жив Или Нет:" FontAttributes="Bold" TextColor="Black"/>
+                                <Label   Text="{Binding IsAlive}" Margin="10,0,0,0" TextColor="Black">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDeleteClicked" NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </StackLayout>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+    </VerticalStackLayout>
+
+    </ScrollView>
 </ContentPage>

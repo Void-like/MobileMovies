@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MauiApp1.Models
 {
-    public class Movies
+    public class Movie
     {
        public int Id { get; set; }  
        public string Name { get; set; }
@@ -14,6 +14,14 @@ namespace MauiApp1.Models
         public string Description { get; set; }
 
         public DateTime Date { get; set; }
-        
+
+        public double Ocenochka { get; set; }
+
+        public string Genre { get; set; }
+
+        public double Minutes { get; set; }
+
+
+
     }
 }

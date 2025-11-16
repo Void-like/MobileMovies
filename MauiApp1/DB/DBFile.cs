@@ -1,4 +1,5 @@
 ﻿
+
 using MauiApp1.Models;
 using System;
 using System.Collections.Generic;
@@ -11,100 +12,146 @@ namespace MauiApp1.DB
 {
     public class DBFile
     {
-        private List<Author> authorList  = new List<Author>();
-        private List<Movies> moviesList  = new List<Movies>();
-        private  List<ListMovies> listMovies = new List<ListMovies>();
-        private List<int> ints = new List<int> { 0,0,0};
+        private List<Author> authorList = new List<Author>();
+        private List<Movie> moviesList = new List<Movie>();
+        private List<MoviesAuthors> listMovies = new List<MoviesAuthors>();
+        private List<int> ints = new List<int> { 0, 0, 0 };
 
 
         public DBFile()
         {
             LoadDis();
 
-        } 
-
-
-
-        public async Task ListMoviesAdd(int idAuthor,int idMovies)
-        {
-            ListMovies movies = new ListMovies();
-            movies.Id = ints[2];
-            movies.IdAuthor = idAuthor;
-            movies.IdMovies = idMovies;
-        
-                
-            
-            listMovies.Add(movies);
-            await SaveFileListMovie();
-            await SaveFileDiscriminant();
-            ints[2] = ints[2] + 1;
         }
 
-        public async Task ListMoviesChange(int id ,int idAuthor, int idMovies)
+
+
+        public async Task ListMoviesAdd(int idAuthor, int idMovies)
         {
-            ListMovies movies = new ListMovies();
+            MoviesAuthors movies = new MoviesAuthors();
+            movies.Id = ints[2];
+            movies.IdAuthor = idAuthor;
+            movies.IdMovie = idMovies;
+
+            listMovies.Add(movies);
+
+            ints[2] = ints[2] + 1;
+
+            await SaveFileListMovie();
+            await SaveFileDiscriminant();
+
+
+        }
+
+        public async Task ListMoviesChange(int id, int idAuthor, int idMovies)
+        {
+            MoviesAuthors movies = new MoviesAuthors();
             movies.Id = id;
             movies.IdAuthor = idAuthor;
-            movies.IdMovies = idMovies;
-
+            movies.IdMovie = idMovies;
 
             listMovies.Insert(id, movies);
-            
+
             await SaveFileListMovie();
             await SaveFileDiscriminant();
 
         }
         public async Task ListMoviesDel(int id)
         {
-            Movies movies = new Movies();
-            foreach (Movies author in moviesList)
+            MoviesAuthors moviesAuthors = new MoviesAuthors();
+            for (int i = 0; i < listMovies.Count; i++)
             {
 
-                if (author.Id == id)
+                if (listMovies[i].Id == id)
                 {
 
-                    movies = author;
+                    moviesAuthors = listMovies[i];
                 }
-               
+
 
             }
-            //moviesList.Remove(); исправить удаление
+            listMovies.Remove(moviesAuthors);
+            await DelMovie(listMovies[id].IdMovie);
+            await DelAuthor(listMovies[id].IdAuthor);
             await SaveFileListMovie();
+            await SaveFileDiscriminant();
         }
-        public async Task ChangeMovie(int id, string name,string description ,DateTime date)
+        public async Task ChangeMovie(int id, string name, string description, DateTime date, double ocenochka, string genre, double minutes)
         {
-            Movies movies = new Movies();
+            Movie movies = new Movie();
             movies.Id = id;
-            movies.Name = name;
-            movies.Description = description;
-            movies.Date = date;
+            if (name != null)
+            {
+                movies.Name = name;
+            }
+            if (description != null)
+            {
+                movies.Description = description;
+            }
+            if (date != null)
+            {
+                movies.Date = date;
+            }
+            if (genre != null)
+            {
+                movies.Genre = genre;
+            }
+            if (minutes != 0)
+            {
+                movies.Minutes = minutes;
+            }
+            movies.Ocenochka = ocenochka;
+
             int a = 0;
             int b = 0;
-            foreach (Movies author in moviesList) 
+            foreach (Movie author in moviesList)
             {
 
                 if (author.Id == id)
                 {
-                    
+
                     b = a;
                 }
-            a++;
-            
+                a++;
+
             }
             moviesList[b] = movies;
             await SaveFileMovie();
-            
+
         }
-        public async Task ChangeAuthor(int id, string name, string secondName,string thrityName, DateTime birthDay)
+        public async Task ChangeAuthor(int id, string name, string secondName, string thrityName, DateTime birthDay, string gender, double ocenochka,bool isalive)
         {
             int a = 0;
             int b = 0;
             Author authors = new Author();
+        
             authors.Id = id;
-            authors.Name = name;
-            authors.SecondName = secondName;
+            
+            if (name != null)
+            {
+                authors.Name = name;
+            }
+            if (secondName != null)
+            {
+                authors.SecondName = secondName;
+            }
+            
             authors.BirthDay = birthDay;
-            authors.ThrityName = thrityName;
+            
+            if (thrityName != null)
+            {
+                authors.ThrityName = thrityName;
+            }
+            if (String.IsNullOrWhiteSpace(gender))
+            {
+                authors.Gender = gender;
+            }
+            else
+            {
+                authors.Gender = gender;
+            }
+                authors.Ocenochka = ocenochka;
+            authors.IsAlive = isalive;
             foreach (Author author in authorList)
             {
 
@@ -120,26 +167,27 @@ namespace MauiApp1.DB
         }
         public async void LoadDis()
         {
-         
-            await  LoadDiscriminant();
+
+            await LoadDiscriminant();
             await LoadFileAuthor();
             await LoadFileMovie();
+            await LoadFileListMovie();
+
         }
 
         public async Task SaveFileDiscriminant()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "discriminant1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "discriminant2.db");
             using (FileStream outputStream = File.Create(targetFile))
             {
                 await JsonSerializer.SerializeAsync(outputStream, ints);
             }
-            LoadDis();
         }
         public async Task LoadDiscriminant()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "discriminant1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "discriminant2.db");
             if (File.Exists(targetFile))
             {
                 string a = await File.ReadAllTextAsync(targetFile);
@@ -149,42 +197,57 @@ namespace MauiApp1.DB
 
         }
 
-        public  async Task<List<Author>> GetAuthorList()
-        {
-         await Task.Delay(1000);
-         return authorList.ToList();
-
-        }
-        public async  Task<List<Movies>> GetMovieList()
+        public async Task<List<MoviesAuthors>> GetMovieAuthorList()
         {
             await Task.Delay(1000);
-            return moviesList.ToList();
-
+            return listMovies.ToList();
         }
-        public async Task<IReadOnlyList<ListMovies>> GetMovieAuthorList()
+        public async Task<List<Author>> GetAuthorList()
         {
             await Task.Delay(1000);
-            return listMovies;
+            return authorList.ToList();
+        }
 
+        public async Task<List<Movie>> GetMovieList()
+        {
+            await Task.Delay(1000);
+            return moviesList;
         }
 
         public async Task DelAuthor(int id)
         {
-        
-            authorList.RemoveAt(id);
+            Author author = new Author();
+            for (int i = 0; i < authorList.Count; i++)
+            {
+                if (authorList[i].Id == id)
+                {
+                   
+                    author = authorList[i];
+                }
+            }
+            await Task.Delay(1000);
+            authorList.Remove(author);
             await SaveFileAuthor();
         }
         public async Task DelMovie(int id)
         {
-     
+            Movie movie = new Movie();
+            for (int i = 0; i < moviesList.Count; i++)
+            {
+                if (moviesList[i].Id == id)
+                {
+
+                    movie = moviesList[i];
+                }
+            }
             await Task.Delay(1000);
-            moviesList.RemoveAt(id);
+            moviesList.Remove(movie);
             await SaveFileMovie();
         }
-      
-        
 
-        public async Task AddAuthor(string name,string secondName,string thrityName,DateTime birthDay)
+
+
+        public async Task AddAuthor(string name, string secondName, string thrityName, DateTime birthDay , string gender ,double ocenochka,bool isalive)
         {
             Author author = new Author();
             author.Id = ints[0];
@@ -192,28 +255,34 @@ namespace MauiApp1.DB
             author.SecondName = secondName;
             author.ThrityName = thrityName;
             author.BirthDay = birthDay;
+            author.Gender = gender;
+            author.Ocenochka = ocenochka;
+            author.IsAlive = isalive;
             authorList.Add(author);
-            ints[0] = ints[0]+1;
+            ints[0] = ints[0] + 1;
             await SaveFileDiscriminant();
             await SaveFileAuthor();
         }
-        public async Task AddMovies(string name ,string description,DateTime date)
+        public async Task AddMovies(string name, string description, DateTime date, double ocenochka, string genre,double minutes)
         {
-            Movies movies = new Movies();
+            Movie movies = new Movie();
             movies.Id = ints[1];
             movies.Name = name;
             movies.Description = description;
             movies.Date = date;
+            movies.Ocenochka = ocenochka;
+            movies.Genre = genre;
+            movies.Minutes = minutes;
             moviesList.Add(movies);
             ints[1] = ints[1] + 1;
             await SaveFileDiscriminant();
             await SaveFileMovie();
         }
-        public async Task AddMoviesList(int IdAuthor,int IdMovies, string Title,string FirstName,string LastName, string SecondName)
+        public async Task AddMoviesList(int IdAuthor, int IdMovies, string Title, string FirstName, string LastName, string SecondName)
         {
 
-            ListMovies listMoviesAdd = new ListMovies();
-          
+            MoviesAuthors listMoviesAdd = new MoviesAuthors();
+
 
             listMovies.Add(listMoviesAdd);
             ints[2] = ints[2] + 1;
@@ -223,48 +292,46 @@ namespace MauiApp1.DB
 
         }
 
-        public  async Task SaveFileMovie()
+        public async Task SaveFileMovie()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "movie1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "movie2.db");
             using (FileStream outputStream = File.Create(targetFile))
             {
                 await JsonSerializer.SerializeAsync(outputStream, moviesList);
             }
-            LoadDis();
         }
 
         public async Task LoadFileMovie()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "movie1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "movie2.db");
             if (File.Exists(targetFile))
             {
                 string a = await File.ReadAllTextAsync(targetFile);
-                moviesList = JsonSerializer.Deserialize<List<Movies>>(a);
-                
+                moviesList = JsonSerializer.Deserialize<List<Movie>>(a);
+
             }
-            
+
         }
         public async Task SaveFileListMovie()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "listmovie1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "listmovie3.db");
             using (FileStream outputStream = File.Create(targetFile))
             {
                 await JsonSerializer.SerializeAsync(outputStream, listMovies);
             }
-            LoadDis();
         }
 
         public async Task LoadFileListMovie()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "listmovie1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "listmovie3.db");
             if (File.Exists(targetFile))
             {
                 string a = await File.ReadAllTextAsync(targetFile);
-                listMovies = JsonSerializer.Deserialize<List<ListMovies>>(a);
+                listMovies = JsonSerializer.Deserialize<List<MoviesAuthors>>(a);
 
             }
 
@@ -272,7 +339,7 @@ namespace MauiApp1.DB
         public async Task SaveFileAuthor()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "author1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "author3.db");
             using (FileStream outputStream = File.Create(targetFile))
             {
                 await JsonSerializer.SerializeAsync(outputStream, authorList);
@@ -282,20 +349,48 @@ namespace MauiApp1.DB
         public async Task LoadFileAuthor()
         {
 
-            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "author1.db");
+            string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "author3.db");
             if (File.Exists(targetFile))
             {
                 string a = await File.ReadAllTextAsync(targetFile);
 
-                authorList =  JsonSerializer.Deserialize<List<Author>>(a);
+                authorList = JsonSerializer.Deserialize<List<Author>>(a);
 
             }
-       
+
         }
-    
+
+
     }
-
-
-
-
 }
+
+
+
+
+//1. Придумать тему вашего приложения и выделить минимум 2 объекта связанных между собой, с которыми будет работать приложение(Пример: книга, автор).
+//2. Разработать класс, имитирующий работу с базой данных.
+//	2.1. Для каждого объекта должны быть следующие методы:
+//		1) Получения списка элементов.
+//		2) Получение элемента по id.
+//		3) Добавление элемента.
+//		4) Редактирование элементе.
+//		5) Удаление элемента по id.
+//	2.2. Все методы в классе должны иметь возможность работать асинхронно.
+//	2.3. Данные сохранять в файл (файлы).
+//3. Сделать вывод данных используя все 3 вида выводов списка (ListView, CollectionView, CarouselView).
+//4. Сделать добавление, редактирование, удаление для всех объектов.
+//	4.1. При добавлении и редактировании объектов должны использоваться в сумме как минимум 5 разных видов элементов ввода (Stepper, Switch, Slider и т.д.).
+//	4.2. Должна быть возможность отмены редактирования.При отмене, значения элемента должны вернуться к исходным.
+//	4.3. Должно быть запрещено удаление связанных друг с другом элементов.
+//Задание делать в копии своего приложения с простой навигацией.
+//1. Перестроить всю навигацию в приложении на Shell.
+//1.1. Использовать все три элемента для навигации в Shell: FlyoutItem, Tab, TabBar
+//1.2. Переходы на страницы с передачей данных сделать разными способами.
+//2. Стилизовать FlyoutItem, Tab, TabBar (цвет, шрифт и т.д.).
+//3. Создать свои ContentView и найти им применение в приложении.
+//4. У всплывающего меню сделать в AppShell свои Header и Footer.
+//5. Сделать страницы авторизации и регистрации.
+//5.1. При запуске приложения первой страницей открывается авторизация.
+//5.2. Находясь на этих страницах не должны отображаться всплывающее меню.
+//6. Сделать загрузку пользователем файлов (изображений, документов и т.д.).
+

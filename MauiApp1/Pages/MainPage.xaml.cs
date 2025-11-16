@@ -3,13 +3,18 @@ using MauiApp1.Models;
 using MauiApp1.Pages;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Threading.Tasks;
+
 
 namespace MauiApp1
 {
     public partial class MainPage : ContentPage
     {
-        DBFile db = new DBFile();
-        public Movies SelectedMovie { get; set; }
+        public List<string> Genres { get; set; } = new List<string> { "Хоррор","Комедия","Романтика","Боевик"};
+         
+       public double OcenochkaReal {  get; set; }
+       DBFile db = new DBFile();
+        public Movie SelectedMovie { get; set; }
         public MainPage()
         {
             InitializeComponent();
@@ -17,13 +22,13 @@ namespace MauiApp1
             db.LoadFileMovie();
             Tablichka();
         }
-        public void SaveMovie()
+        public async void SaveMovie()
         {
-            db.AddMovies(TitleText.Text, DiscriptionText.Text, DiscriptionDate.Date);
+           await db.AddMovies(TitleText.Text, DiscriptionText.Text, DiscriptionDate.Date, OcenochkaReal, GenreList.SelectedItem.ToString(), SliderMinutes.Value);
             Tablichka();
             
         }
-  
+        
         public  async void Tablichka()
         {
             
@@ -39,7 +44,7 @@ namespace MauiApp1
            
             if (SelectedMovie != null)
             {
-                await db.ChangeMovie(SelectedMovie.Id, TitleText.Text, DiscriptionText.Text, DiscriptionDate.Date);
+                await db.ChangeMovie(SelectedMovie.Id, TitleText.Text, DiscriptionText.Text, DiscriptionDate.Date, OcenochkaReal, GenreList.SelectedItem.ToString(), SliderMinutes.Value);
             }
             else
             {
@@ -49,25 +54,43 @@ namespace MauiApp1
         }
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
-  
+
+            
+
+            if (sender is Button button)
+            {
+
+                SelectedMovie = MovieListTablichka.ItemsSource as Movie;
+            }
+            else if (sender is Label label)
+            {
+
+                SelectedMovie = label.BindingContext as Movie;
+            }
+
             if (SelectedMovie != null)
             {
-               await db.DelMovie(SelectedMovie.Id);
-                
+                bool result = await DisplayAlert("Удаление",
+                    $"Вы уверены, что хотите удалить ?", "Да", "Нет");
+
+                if (result)
+                {
+                    await db.DelMovie(SelectedMovie.Id);
+                    Tablichka(); 
+                }
             }
             else
             {
-               await DisplayAlert("ОШИБКА МОЛОДОСТИ","Не выбран айтем","Емае"); 
+                await DisplayAlert("Ошибка", "Не выбран автор для удаления", "OK");
             }
-            Tablichka();
         }
         public async void Button_Clicked_To_Page2(object sender, EventArgs e)
         {   
-            await Navigation.PushModalAsync(new NewPage1());
+            await Navigation.PushModalAsync(new NewPage1(db));
         }
         public async void Button_Clicked_To_Page3(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new NewPage2());
+            await Navigation.PushModalAsync(new NewPage2(db));
         }
     }
 

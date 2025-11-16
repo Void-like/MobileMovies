@@ -10,30 +10,68 @@ namespace MauiApp1;
 
 public partial class NewPage1 : ContentPage
 {
-    DBFile db = new DBFile();
+    public List<string> Genres { get; set; } = new List<string> { "Мужик", "ЖЕНЩИНА" };
+    public double OcenochkaReal { get; set; }
+    DBFile db;
     public Author SelectedAuthor { get; set; }
-    public NewPage1()
+    public NewPage1(DBFile db)
 	{
 		InitializeComponent();
         BindingContext = this;
-
-        db.LoadFileAuthor();
+        this.db = db;
         Tablichka();
 
     }
-    public  async Task SaveAuthor()
+    public  async void SaveAuthor()
     {
-      await  db.AddAuthor(Name.Text, SecondName.Text, ThirtyName.Text, BirthDayText.Date);
+      await  db.AddAuthor(Name.Text, SecondName.Text, ThirtyName.Text, BirthDayText.Date, gender.SelectedItem.ToString(), OcenochkaReal, LiveOrDie.IsToggled);
         
         Tablichka();
     }
-   
-    private async void OnChangeClicked(object sender, EventArgs e)
+    private async void OnDeleteClicked(object sender, EventArgs e)
     {
 
+        Author model = null;
+
+        if (sender is Button button)
+        {
+        
+            model = Tablicka.CurrentItem as Author;
+        }
+        else if (sender is Label label)
+        {
+         
+            model = label.BindingContext as Author;
+        }
+
+        if (model != null)
+        {
+            bool result = await DisplayAlert("Удаление",
+                $"Вы уверены, что хотите удалить автора {model.SecondName} {model.Name}?", "Да", "Нет");
+
+            if (result)
+            {
+                await db.DelAuthor(model.Id);
+                Tablichka();
+            }
+        }
+        else
+        {
+            await DisplayAlert("Ошибка", "Не выбран автор для удаления", "OK");
+        }
+    }
+    private async void OnChangeClicked(object sender, EventArgs e)
+    { 
         if (SelectedAuthor != null)
         {
-            await db.ChangeAuthor(SelectedAuthor.Id, Name.Text, SecondName.Text, ThirtyName.Text ,BirthDayText.Date);
+            if (gender.SelectedItem != null)
+            {
+                await db.ChangeAuthor(SelectedAuthor.Id, Name.Text, SecondName.Text, ThirtyName.Text, BirthDayText.Date, gender.SelectedItem.ToString(), OcenochkaReal, LiveOrDie.IsToggled);
+            }
+            {
+                await db.ChangeAuthor(SelectedAuthor.Id, Name.Text, SecondName.Text, ThirtyName.Text, BirthDayText.Date, "", OcenochkaReal, LiveOrDie.IsToggled);
+            }
+                       
         }
         else
         {
@@ -46,20 +84,6 @@ public partial class NewPage1 : ContentPage
 
         Tablicka.ItemsSource = await db.GetAuthorList();
         OnPropertyChanged(nameof(db.GetMovieList));
-    }
-    private async void OnDeleteClicked(object sender, EventArgs e)
-    {
-
-        if (SelectedAuthor != null)
-        {
-            await db.DelAuthor(SelectedAuthor.Id);
-
-        }
-        else
-        {
-            await DisplayAlert("ОШИБКА МОЛОДОСТИ", "Не выбран айтем", "Емае");
-        }
-        Tablichka();
     }
    
     private void Button_Clicked_Author(object sender, EventArgs e)
